@@ -13,10 +13,10 @@
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
         tools:targetApi="31">
         <activity
-            android:name=".Find"
+            android:name=".FindActivity"
             android:exported="false" />
         <activity
-            android:name=".Mediateka"
+            android:name=".MediatekaActivity"
             android:exported="false" />
         <activity
             android:name=".SettingsActivity"
