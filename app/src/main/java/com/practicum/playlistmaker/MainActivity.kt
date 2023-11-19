@@ -12,7 +12,7 @@ class MainActivity : AppCompatActivity() {
 
         val buttonFind = findViewById<Button>(R.id.button_find)
         buttonFind.setOnClickListener {
-            val findIntent = Intent(this, MediatekaActivity::class.java)
+            val findIntent = Intent(this, FindActivity::class.java)
             startActivity(findIntent)
         }
 

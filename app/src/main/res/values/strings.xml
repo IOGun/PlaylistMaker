@@ -5,8 +5,14 @@
     <string name="button_media">Медиатека</string>
     <string name="button_settings">Настройки</string>
     <string name="setting_screen_title">Настройки</string>
+    <string name="find_screen_title">Поиск</string>
+    <string name="find_hint">Поиск</string>
     <string name="setting_screen_dark_theme">Темная тема</string>
     <string name="setting_screen_share">Поделиться приложением</string>
     <string name="setting_screen_support">Написать в поддержку</string>
     <string name="setting_screen_terms">Пользовательское соглашение</string>
+    <string name="src_practicum_offer">https://yandex.ru/legal/practicum_offer/</string>
+    <string name="my_mail">avblago@yandex.ru</string>
+    <string name="message">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+    <string name="title">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
 </resources>
