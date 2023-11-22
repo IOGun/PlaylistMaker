@@ -15,4 +15,5 @@
     <string name="my_mail">avblago@yandex.ru</string>
     <string name="message">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="title">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="src_practicum_android_developer">https://practicum.yandex.ru/android-developer/</string>
 </resources>

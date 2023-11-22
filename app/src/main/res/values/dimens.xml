@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="header_padding_start">4dp</dimen>
+    <dimen name="header_back_icon_size">48dp</dimen>
+    <dimen name="header_back_icon_padding">12dp</dimen>
     <dimen name="padding_start">16dp</dimen>
     <dimen name="padding_end">12dp</dimen>
     <dimen name="padding_top">18dp</dimen>
@@ -10,4 +13,6 @@
     <dimen name="text_margin_end">28dp</dimen>
     <dimen name="text_title_size">22sp</dimen>
     <dimen name="header_height">56dp</dimen>
+    <dimen name="margin_bottom">28dp</dimen>
+    <dimen name="back_arrow_size">24dp</dimen>
 </resources>

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Switch
 import androidx.appcompat.app.AppCompatDelegate
@@ -14,17 +15,21 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        val backButton = findViewById<ImageView>(R.id.back_image)
+        val backButton = findViewById<ImageView>(R.id.backImage)
         backButton.setOnClickListener {
             finish()
         }
 
-        val shareButton = findViewById<ImageView>(R.id.share_image)
+        val shareButton = findViewById<FrameLayout>(R.id.shareFrame)
         shareButton.setOnClickListener {
-            finish()
+            val message = getString(R.string.src_practicum_android_developer)
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.putExtra(Intent.EXTRA_TEXT, message)
+            shareIntent.setType("text/plain")
+            startActivity(shareIntent)
         }
 
-        val supportButton = findViewById<ImageView>(R.id.support_image)
+        val supportButton = findViewById<FrameLayout>(R.id.supportFrame)
         supportButton.setOnClickListener {
             val message = getString(R.string.message)
             val title = getString(R.string.title)
@@ -39,7 +44,7 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(supportIntent)
         }
 
-        val termsButton = findViewById<ImageView>(R.id.terms_image)
+        val termsButton = findViewById<FrameLayout>(R.id.termsFrame)
         termsButton.setOnClickListener {
             val srcOffert = getString(R.string.src_practicum_offer)
             val termsIntent = Intent()
@@ -48,7 +53,7 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(termsIntent)
         }
 
-        val darkThemeSwitch = findViewById<Switch>(R.id.dark_theme_switch)
+        val darkThemeSwitch = findViewById<Switch>(R.id.darkThemeSwitch)
         darkThemeSwitch.setOnClickListener {
             //AppCompatDelegate.MODE_NIGHT_YES
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)

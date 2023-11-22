@@ -3,7 +3,6 @@ package com.practicum.playlistmaker
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -11,12 +10,12 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 
-class FindActivity : AppCompatActivity() {
+class SearchActivity : AppCompatActivity() {
     companion object{
         const val SEARCH_TEXT_KEY = "TEXT_KEY"
-        const val VALUE_ET_DEF = ""
+        const val EMPTY = ""
     }
-    private var valueFromET = VALUE_ET_DEF
+    private var valueFromET = EMPTY
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(SEARCH_TEXT_KEY, valueFromET)
@@ -24,7 +23,7 @@ class FindActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        valueFromET = savedInstanceState.getString(SEARCH_TEXT_KEY, VALUE_ET_DEF)
+        valueFromET = savedInstanceState.getString(SEARCH_TEXT_KEY, EMPTY)
 
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,22 +31,20 @@ class FindActivity : AppCompatActivity() {
         setContentView(R.layout.activity_find)
 
 
-        val clearButton = findViewById<ImageView>(R.id.clear_button)
-        val editText = findViewById<EditText>(R.id.find_edit_text)
-        val backButton = findViewById<ImageView>(R.id.back_image)
+        val clearButton = findViewById<ImageView>(R.id.clearButton)
+        val editText = findViewById<EditText>(R.id.findEditText)
+        val backButton = findViewById<ImageView>(R.id.backImage)
 
         editText.setText(valueFromET)
 
         clearButton.setOnClickListener {
             val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(editText.windowToken, 0)
-            editText.setText("")
+            editText.setText(EMPTY)
         }
 
-        val simpleTextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                //TODO("Not yet implemented")
-            }
+        val watcher = object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int): Unit {}
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 if (p0.isNullOrEmpty()) {
@@ -58,12 +55,10 @@ class FindActivity : AppCompatActivity() {
                 }
             }
 
-            override fun afterTextChanged(p0: Editable?) {
-                // TODO("Not yet implemented")
-            }
+            override fun afterTextChanged(p0: Editable?): Unit {}
         }
 
-        editText.addTextChangedListener(simpleTextWatcher)
+        editText.addTextChangedListener(watcher)
 
         backButton.setOnClickListener {
             finish()
