@@ -22,7 +22,7 @@ class SettingsActivity : AppCompatActivity() {
 
         val shareButton = findViewById<FrameLayout>(R.id.shareFrame)
         shareButton.setOnClickListener {
-            val message = getString(R.string.src_practicum_android_developer)
+            val message = getString(R.string.android_course_url)
             val shareIntent = Intent(Intent.ACTION_SEND)
             shareIntent.putExtra(Intent.EXTRA_TEXT, message)
             shareIntent.setType("text/plain")
@@ -46,7 +46,7 @@ class SettingsActivity : AppCompatActivity() {
 
         val termsButton = findViewById<FrameLayout>(R.id.termsFrame)
         termsButton.setOnClickListener {
-            val srcOffert = getString(R.string.src_practicum_offer)
+            val srcOffert = getString(R.string.offer_url)
             val termsIntent = Intent()
             termsIntent.action = Intent.ACTION_VIEW
             termsIntent.data = Uri.parse(srcOffert)
