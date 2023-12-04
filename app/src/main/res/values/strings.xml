@@ -16,7 +16,4 @@
     <string name="message">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="title">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="android_course_url">https://practicum.yandex.ru/android-developer/</string>
-    <string name="track_name_tool">Название трека</string>
-    <string name="artist_name_tool">Группа</string>
-    <string name="track_time_tool">4:01</string>
 </resources>

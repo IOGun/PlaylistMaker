@@ -44,7 +44,7 @@ class SearchActivity : AppCompatActivity() {
         editText.setText(valueFromET)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        val playlist = MockObjects().getPlaylist()
+        val playlist = MockObjects.getPlaylist()
 
         val trackAdapter = TrackAdapter(playlist)
         recyclerView.adapter = trackAdapter

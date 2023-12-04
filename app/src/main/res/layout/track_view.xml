@@ -29,7 +29,7 @@
             android:layout_gravity="top"
             android:ellipsize="end"
             android:maxLines="1"
-            tools:text="@string/track_name_tool" />
+            tools:text="Название трека" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
-                tools:text="@string/artist_name_tool" />
+                tools:text="Группа" />
 
             <ImageView
                 android:layout_width="@dimen/point_icon_size"
@@ -57,7 +57,7 @@
                 style="@style/ArtistNameAndTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="@string/track_time_tool" />
+                tools:text="4:01" />
 
         </LinearLayout>
 

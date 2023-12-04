@@ -1,6 +1,6 @@
 package com.practicum.playlistmaker
 
-class MockObjects {
+object MockObjects {
     private val track1 = Track(
         trackName = "Smells Like Teen Spirit",
         artistName = "Nirvana",
