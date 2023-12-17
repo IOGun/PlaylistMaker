@@ -23,7 +23,7 @@
 
 
     <Button
-        android:id="@+id/buttonFind"
+        android:id="@+id/findButton"
         style="@style/MainButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -31,7 +31,7 @@
         app:icon="@drawable/find" />
 
     <Button
-        android:id="@+id/buttonMedia"
+        android:id="@+id/mediaButton"
         style="@style/MainButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -39,7 +39,7 @@
         app:icon="@drawable/media" />
 
     <Button
-        android:id="@+id/buttonSettings"
+        android:id="@+id/settingsButton"
         style="@style/MainButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="0dp"

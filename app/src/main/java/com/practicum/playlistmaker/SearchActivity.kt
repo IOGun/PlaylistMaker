@@ -9,12 +9,16 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+
 
 class SearchActivity : AppCompatActivity() {
-    companion object{
+    companion object {
         const val SEARCH_TEXT_KEY = "TEXT_KEY"
         const val EMPTY = ""
     }
+
     private var valueFromET = EMPTY
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -26,6 +30,7 @@ class SearchActivity : AppCompatActivity() {
         valueFromET = savedInstanceState.getString(SEARCH_TEXT_KEY, EMPTY)
 
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_find)
@@ -34,11 +39,19 @@ class SearchActivity : AppCompatActivity() {
         val clearButton = findViewById<ImageView>(R.id.clearButton)
         val editText = findViewById<EditText>(R.id.findEditText)
         val backButton = findViewById<ImageView>(R.id.backImage)
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
 
         editText.setText(valueFromET)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        val playlist = MockObjects.getPlaylist()
+
+        val trackAdapter = TrackAdapter(playlist)
+        recyclerView.adapter = trackAdapter
 
         clearButton.setOnClickListener {
-            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            val inputMethodManager =
+                getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(editText.windowToken, 0)
             editText.setText(EMPTY)
         }
