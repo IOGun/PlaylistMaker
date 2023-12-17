@@ -24,4 +24,24 @@
     <dimen name="view_track_name_height">20dp</dimen>
     <dimen name="view_track_info_height">20dp</dimen>
     <dimen name="view_track_info_margin_end">120dp</dimen>
+    <!-- Placeholder icon dimens: -->
+    <dimen name="placeholder_image_size">120dp</dimen>
+    <dimen name="placeholder_margin_top">102dp</dimen>
+    <dimen name="placeholder_margin_bottom">16dp</dimen>
+    <!-- Union1 -->
+    <dimen name="un1_padding_horizontal">9dp</dimen>
+    <dimen name="un1_padding_top">3dp</dimen>
+    <!-- Group -->
+    <dimen name="gr_padding_left">37dp</dimen>
+    <dimen name="gr_padding_top">28dp</dimen>
+    <dimen name="gr_padding_right">14dp</dimen>
+    <dimen name="gr_padding_bottom">23dp</dimen>
+    <!-- Union2 -->
+    <dimen name="un2_padding_left">80dp</dimen>
+    <dimen name="un2_padding_top">6dp</dimen>
+    <dimen name="un2_padding_right">9dp</dimen>
+    <!-- Text of message-->
+    <dimen name="message_height">88dp</dimen>
+    <dimen name="message_width">312dp</dimen>
+    <dimen name="message_margin_bottom">24dp</dimen>
 </resources>
