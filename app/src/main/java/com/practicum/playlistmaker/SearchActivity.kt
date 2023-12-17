@@ -66,9 +66,6 @@ class SearchActivity : AppCompatActivity() {
         val playlist = MockObjects.getPlaylist()
         val tracks = ArrayList<Track>()
 
-        //val trackAdapter = TrackAdapter(playlist)
-        //recyclerView.adapter = trackAdapter
-
         val trackAdapter = TrackAdapter()
         trackAdapter.tracks = tracks
         recyclerView.adapter = trackAdapter
@@ -153,44 +150,7 @@ class SearchActivity : AppCompatActivity() {
                 if (editText.text.isNotEmpty()) {
                     searchText = editText.text.toString()
                     iTunesServiceSearch(searchText)
-                    /*iTunesService
-                        .search(editText.text.toString())
-                        .enqueue(object : Callback<TrackResponse> {
-                            override fun onResponse(
-                                call: Call<TrackResponse>,
-                                response: Response<TrackResponse>
-                            ) {
-                                if (response.code() == 200) {
-                                    tracks.clear()
-                                    if (response.body()?.results?.isNotEmpty() == true) {
-                                        tracks.addAll(response.body()?.results!!)
-                                        trackAdapter.notifyDataSetChanged()
-                                    }
-                                    if (tracks.isEmpty()) {
-                                        //nothing found
-                                        recyclerView.visibility = View.GONE
-                                        errorPlaceholder.visibility = View.GONE
-                                        notFoundPlaceholder.visibility = View.VISIBLE
-                                    } else {
-                                        // found
-                                        notFoundPlaceholder.visibility = View.GONE
-                                        errorPlaceholder.visibility = View.GONE
-                                        recyclerView.visibility = View.VISIBLE
-                                    }
-                                } else {
-                                    // something wrong
-                                    recyclerView.visibility = View.GONE
-                                    notFoundPlaceholder.visibility = View.GONE
-                                    errorPlaceholder.visibility = View.VISIBLE
-                                }
-                            }
 
-                            override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                                recyclerView.visibility = View.GONE
-                                notFoundPlaceholder.visibility = View.GONE
-                                errorPlaceholder.visibility = View.VISIBLE
-                            }
-                        })*/
                 }
                 true
             }
