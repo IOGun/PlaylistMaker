@@ -32,4 +32,5 @@ class TrackViewHolder(parent:ViewGroup) : RecyclerView.ViewHolder(
             .placeholder(R.drawable.placeholder)
             .into(image)
     }
+
 }
