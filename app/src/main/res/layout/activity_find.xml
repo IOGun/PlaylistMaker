@@ -60,9 +60,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@color/light_gray"
-            android:imeOptions="actionDone"
-            android:singleLine="true" />
+            android:background="@color/light_gray" />
 
         <ImageView
             android:id="@+id/clearButton"
@@ -80,150 +78,8 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
-    <LinearLayout
-        android:id="@+id/searchHistory"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <TextView
-            style="@style/Placeholders"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="8dp"
-            android:text="@string/search_history_title" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/searchHistoryRecyclerView"
-            android:layout_width="360dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/track_view" />
-
-        <Button
-            android:id="@+id/searchHistoryClearButton"
-            style="@style/UpdateButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/search_history_button" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/notFoundPlaceholder"
-        style="@style/Placeholders"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <FrameLayout
-            android:layout_width="@dimen/placeholder_image_size"
-            android:layout_height="@dimen/placeholder_image_size"
-            android:layout_marginTop="@dimen/placeholder_margin_top"
-            android:layout_marginBottom="@dimen/placeholder_margin_bottom">
-
-            <ImageView
-                style="@style/Union1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="@dimen/un1_padding_horizontal"
-                android:paddingTop="@dimen/un1_padding_top" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/gr_padding_left"
-                android:paddingTop="@dimen/gr_padding_top"
-                android:paddingRight="@dimen/gr_padding_right"
-                android:paddingBottom="@dimen/gr_padding_bottom"
-                android:src="@drawable/group_174" />
-
-            <ImageView
-                style="@style/Union2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/un2_padding_left"
-                android:paddingTop="@dimen/un2_padding_top"
-                android:paddingRight="@dimen/un2_padding_right" />
-
-        </FrameLayout>
-
-        <TextView
-            style="@style/Placeholders"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:text="@string/not_found" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/errorPlaceholder"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <FrameLayout
-            style="@style/Placeholders"
-            android:layout_width="@dimen/placeholder_image_size"
-            android:layout_height="@dimen/placeholder_image_size"
-            android:layout_marginTop="@dimen/placeholder_margin_top"
-            android:layout_marginBottom="@dimen/placeholder_margin_bottom">
-
-            <ImageView
-                style="@style/Union1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="@dimen/un1_padding_horizontal"
-                android:paddingTop="@dimen/un1_padding_top" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/gr_padding_left"
-                android:paddingTop="@dimen/gr_padding_top"
-                android:paddingRight="@dimen/gr_padding_right"
-                android:paddingBottom="@dimen/gr_padding_bottom"
-                android:src="@drawable/group_175" />
-
-            <ImageView
-                style="@style/Union2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/un2_padding_left"
-                android:paddingTop="@dimen/un2_padding_top"
-                android:paddingRight="@dimen/un2_padding_right"
-                android:paddingBottom="4dp" />
-
-        </FrameLayout>
-
-        <TextView
-            style="@style/Placeholders"
-            android:layout_width="@dimen/message_width"
-            android:layout_height="@dimen/message_height"
-            android:layout_marginBottom="@dimen/message_margin_bottom"
-            android:gravity="center"
-            android:text="@string/error" />
-
-        <Button
-            android:id="@+id/updateButton"
-            style="@style/UpdateButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_update" />
-    </LinearLayout>
 
 </LinearLayout>
 

@@ -16,9 +16,4 @@
     <string name="message">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="title">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="android_course_url">https://practicum.yandex.ru/android-developer/</string>
-    <string name="not_found">Ничего не нашлось</string>
-    <string name="error">Проблема со связью \n \nЗагрузка не удалась. Проверте подключение к интернету</string>
-    <string name="button_update">Обновить</string>
-    <string name="search_history_title">Вы искали</string>
-    <string name="search_history_button">Очистить историю</string>
 </resources>
