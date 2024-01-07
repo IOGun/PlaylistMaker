@@ -53,11 +53,23 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(termsIntent)
         }
 
+        val sharedPrefs = getSharedPreferences("day_night_theme", MODE_PRIVATE) //darkTheme from app
+
         val darkThemeSwitch = findViewById<Switch>(R.id.darkThemeSwitch)
-        darkThemeSwitch.setOnClickListener {
+        /*darkThemeSwitch.setOnClickListener {
             //AppCompatDelegate.MODE_NIGHT_YES
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             //saveTheme(THEME_DARK)
+        }*/
+
+        /*if (darkThemeSwitch.isChecked) {
+            darkThemeSwitch.
+        }*/
+        darkThemeSwitch.isChecked = sharedPrefs.getBoolean("day_night", false)
+
+        darkThemeSwitch.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switcnTheme(checked)
+            sharedPrefs.edit().putBoolean("day_night", checked).apply()
         }
     }
 }
