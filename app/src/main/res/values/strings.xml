@@ -19,4 +19,5 @@
     <string name="not_found">Ничего не нашлось</string>
     <string name="error">Проблема со связью \n \nЗагрузка не удалась. Проверте подключение к интернету</string>
     <string name="button_update">Обновить</string>
+
 </resources>
