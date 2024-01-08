@@ -12,7 +12,6 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 
-//class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 class TrackViewHolder(parent:ViewGroup) : RecyclerView.ViewHolder(
     LayoutInflater.from(parent.context).inflate(R.layout.track_view, parent, false)
 ) {

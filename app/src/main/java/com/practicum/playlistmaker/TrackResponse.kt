@@ -2,5 +2,5 @@ package com.practicum.playlistmaker
 
 class TrackResponse(
     val resultCount: Int,
-    val results: MutableList<Track>
+    val results: List<Track>
 )
