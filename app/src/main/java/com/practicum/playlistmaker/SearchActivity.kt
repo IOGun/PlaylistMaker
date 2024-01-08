@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -25,6 +26,8 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         const val SEARCH_TEXT_KEY = "TEXT_KEY"
         const val EMPTY = ""
+        const val SEARCH_HISTORY_PREFERENCES = "search_history_preferences"
+        const val MAX_HISTORY_SIZE = 10
     }
 
     private var valueFromET = EMPTY
@@ -39,6 +42,7 @@ class SearchActivity : AppCompatActivity() {
         valueFromET = savedInstanceState.getString(SEARCH_TEXT_KEY, EMPTY)
 
     }
+
 
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://itunes.apple.com")
@@ -59,17 +63,48 @@ class SearchActivity : AppCompatActivity() {
         val errorPlaceholder = findViewById<LinearLayout>(R.id.errorPlaceholder)
         val updateButton = findViewById<Button>(R.id.updateButton)
         var recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        val searchHistoryPlaceholder = findViewById<LinearLayout>(R.id.searchHistory)
+        val searchHistoryRecyclerView = findViewById<RecyclerView>(R.id.searchHistoryRecyclerView)
+        val searchHistoryClearButton = findViewById<Button>(R.id.searchHistoryClearButton)
 
         editText.setText(valueFromET)
-        recyclerView.layoutManager = LinearLayoutManager(this)
 
-        val playlist = MockObjects.getPlaylist()
-        val tracks = ArrayList<Track>()
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        searchHistoryRecyclerView.layoutManager = LinearLayoutManager(this)
+
+        // val playlist = MockObjects.getPlaylist()
+        val tracks: MutableList<Track> = mutableListOf()
 
         val trackAdapter = TrackAdapter()
         trackAdapter.tracks = tracks
         recyclerView.adapter = trackAdapter
 
+
+        val sharedPreferences = getSharedPreferences(SEARCH_HISTORY_PREFERENCES, MODE_PRIVATE)
+        val searchHistory = SearchHistory(sharedPreferences)
+        val history = searchHistory.read()
+
+        trackAdapter.itemClickListener = TrackAdapter.ItemClickListener {
+
+            var i = 0
+            for (track in history) {
+                if (track.trackId == it.trackId) {
+                    history.removeAt(i)
+                    i = 0
+                    break
+                }
+                i++
+            }
+            history.add(0, it)
+            if (history.size > MAX_HISTORY_SIZE) {
+                history.removeAt(history.size - 1)
+            }
+            searchHistory.write(history)
+
+            Log.d("CLICK", "TRACK ${it.trackName} ID ${it.trackId}  ")
+        }
+
+        val searchHistoryAdapter = SearchHistoryAdapter()
 
         clearButton.setOnClickListener {
             val inputMethodManager =
@@ -79,6 +114,27 @@ class SearchActivity : AppCompatActivity() {
             recyclerView.visibility = View.GONE
             notFoundPlaceholder.visibility = View.GONE
             errorPlaceholder.visibility = View.GONE
+        }
+
+        editText.setOnFocusChangeListener { view, hasFocus ->
+            if (hasFocus && editText.text.isEmpty()) {
+                val tracks = searchHistory.read()
+                if (tracks.isNotEmpty()) {
+                    searchHistoryPlaceholder.visibility = View.VISIBLE
+                    searchHistoryAdapter.tracks = tracks
+                    searchHistoryRecyclerView.adapter = searchHistoryAdapter
+                } else {
+                    searchHistoryPlaceholder.visibility = View.GONE
+                }
+
+                searchHistoryClearButton.setOnClickListener {
+                    searchHistory.clear()
+                    searchHistoryPlaceholder.visibility = View.GONE
+                }
+
+            } else {
+                searchHistoryPlaceholder.visibility = View.GONE
+            }
         }
 
         val watcher = object : TextWatcher {
@@ -116,6 +172,7 @@ class SearchActivity : AppCompatActivity() {
                             tracks.clear()
                             if (response.body()?.results?.isNotEmpty() == true) {
                                 tracks.addAll(response.body()?.results!!)
+                                Log.d("RES", "${response.body()?.results!!}")
                                 trackAdapter.notifyDataSetChanged()
                             }
                             if (tracks.isEmpty()) {
