@@ -11,6 +11,10 @@ import androidx.appcompat.app.AppCompatDelegate
 import java.net.URI
 
 class SettingsActivity : AppCompatActivity() {
+    companion object{
+        private const val DAY_NIGHT_PREFERENCE = "day_night_theme"
+        private const val DAY_NIGHT_KEY = "day_night"
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -53,23 +57,15 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(termsIntent)
         }
 
-        val sharedPrefs = getSharedPreferences("day_night_theme", MODE_PRIVATE) //darkTheme from app
+        val sharedPrefs = getSharedPreferences(DAY_NIGHT_PREFERENCE, MODE_PRIVATE) //darkTheme from app
 
         val darkThemeSwitch = findViewById<Switch>(R.id.darkThemeSwitch)
-        /*darkThemeSwitch.setOnClickListener {
-            //AppCompatDelegate.MODE_NIGHT_YES
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            //saveTheme(THEME_DARK)
-        }*/
 
-        /*if (darkThemeSwitch.isChecked) {
-            darkThemeSwitch.
-        }*/
-        darkThemeSwitch.isChecked = sharedPrefs.getBoolean("day_night", false)
+        darkThemeSwitch.isChecked = sharedPrefs.getBoolean(DAY_NIGHT_KEY, false)
 
         darkThemeSwitch.setOnCheckedChangeListener { switcher, checked ->
             (applicationContext as App).switcnTheme(checked)
-            sharedPrefs.edit().putBoolean("day_night", checked).apply()
+            sharedPrefs.edit().putBoolean(DAY_NIGHT_KEY, checked).apply()
         }
     }
 }

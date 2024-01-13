@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -24,10 +23,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
     companion object {
-        const val SEARCH_TEXT_KEY = "TEXT_KEY"
-        const val EMPTY = ""
-        const val SEARCH_HISTORY_PREFERENCES = "search_history_preferences"
-        const val MAX_HISTORY_SIZE = 10
+        private const val SEARCH_TEXT_KEY = "TEXT_KEY"
+        private const val EMPTY = ""
+        private const val SEARCH_HISTORY_PREFERENCES = "search_history_preferences"
+        private const val MAX_HISTORY_SIZE = 10
     }
 
     private var valueFromET = EMPTY
@@ -72,9 +71,9 @@ class SearchActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         searchHistoryRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        // val playlist = MockObjects.getPlaylist()
-        val tracks: MutableList<Track> = mutableListOf()
 
+        val tracks: MutableList<Track> = mutableListOf()
+        val searchHistoryAdapter = SearchHistoryAdapter()
         val trackAdapter = TrackAdapter()
         trackAdapter.tracks = tracks
         recyclerView.adapter = trackAdapter
@@ -83,6 +82,14 @@ class SearchActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences(SEARCH_HISTORY_PREFERENCES, MODE_PRIVATE)
         val searchHistory = SearchHistory(sharedPreferences)
         val history = searchHistory.read()
+
+        /*if (history.isNotEmpty()) {
+            searchHistoryPlaceholder.visibility = View.VISIBLE
+            searchHistoryAdapter.tracks = history
+            searchHistoryRecyclerView.adapter = searchHistoryAdapter
+        } else {
+            searchHistoryPlaceholder.visibility = View.GONE
+        }*/
 
         trackAdapter.itemClickListener = TrackAdapter.ItemClickListener {
 
@@ -100,11 +107,10 @@ class SearchActivity : AppCompatActivity() {
                 history.removeAt(history.size - 1)
             }
             searchHistory.write(history)
-
-            Log.d("CLICK", "TRACK ${it.trackName} ID ${it.trackId}  ")
         }
 
-        val searchHistoryAdapter = SearchHistoryAdapter()
+
+
 
         clearButton.setOnClickListener {
             val inputMethodManager =
@@ -118,23 +124,25 @@ class SearchActivity : AppCompatActivity() {
 
         editText.setOnFocusChangeListener { view, hasFocus ->
             if (hasFocus && editText.text.isEmpty()) {
-                val tracks = searchHistory.read()
-                if (tracks.isNotEmpty()) {
+                val tracksHistory = searchHistory.read()
+                if (tracksHistory.isNotEmpty()) {
                     searchHistoryPlaceholder.visibility = View.VISIBLE
-                    searchHistoryAdapter.tracks = tracks
+                    searchHistoryAdapter.tracks = tracksHistory
                     searchHistoryRecyclerView.adapter = searchHistoryAdapter
                 } else {
                     searchHistoryPlaceholder.visibility = View.GONE
                 }
 
-                searchHistoryClearButton.setOnClickListener {
-                    searchHistory.clear()
-                    searchHistoryPlaceholder.visibility = View.GONE
-                }
+
 
             } else {
                 searchHistoryPlaceholder.visibility = View.GONE
             }
+        }
+
+        searchHistoryClearButton.setOnClickListener {
+            searchHistory.clear()
+            searchHistoryPlaceholder.visibility = View.GONE
         }
 
         val watcher = object : TextWatcher {
@@ -147,10 +155,18 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (p0.isNullOrEmpty()) {
+                if (p0.isNullOrEmpty() && editText?.hasFocus() == true) {
                     clearButton.visibility = View.GONE
+                    if (history.isNotEmpty()) {
+                        searchHistoryPlaceholder.visibility = View.VISIBLE
+                        searchHistoryAdapter.tracks = history
+                        searchHistoryRecyclerView.adapter = searchHistoryAdapter
+                    } else {
+                        searchHistoryPlaceholder.visibility = View.GONE
+                    }
                 } else {
                     clearButton.visibility = View.VISIBLE
+                    searchHistoryPlaceholder.visibility = View.GONE
                     valueFromET = p0.toString()
                 }
             }
@@ -172,7 +188,6 @@ class SearchActivity : AppCompatActivity() {
                             tracks.clear()
                             if (response.body()?.results?.isNotEmpty() == true) {
                                 tracks.addAll(response.body()?.results!!)
-                                Log.d("RES", "${response.body()?.results!!}")
                                 trackAdapter.notifyDataSetChanged()
                             }
                             if (tracks.isEmpty()) {

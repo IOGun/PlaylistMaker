@@ -62,7 +62,10 @@
             android:layout_weight="1"
             android:background="@color/light_gray"
             android:imeOptions="actionDone"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:focusable="true"
+            />
+
 
         <ImageView
             android:id="@+id/clearButton"
@@ -85,10 +88,8 @@
 
     <LinearLayout
         android:id="@+id/searchHistory"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
         android:orientation="vertical"
         android:visibility="gone">
 
@@ -103,8 +104,8 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/searchHistoryRecyclerView"
-            android:layout_width="360dp"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/track_view" />
@@ -115,6 +116,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:layout_gravity="center"
             android:text="@string/search_history_button" />
     </LinearLayout>
 
