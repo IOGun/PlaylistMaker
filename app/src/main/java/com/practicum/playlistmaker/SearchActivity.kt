@@ -23,8 +23,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
     companion object {
-        const val SEARCH_TEXT_KEY = "TEXT_KEY"
-        const val EMPTY = ""
+        private const val SEARCH_TEXT_KEY = "TEXT_KEY"
+        private const val EMPTY = ""
+        private const val SEARCH_HISTORY_PREFERENCES = "search_history_preferences"
+        private const val MAX_HISTORY_SIZE = 10
     }
 
     private var valueFromET = EMPTY
@@ -39,6 +41,7 @@ class SearchActivity : AppCompatActivity() {
         valueFromET = savedInstanceState.getString(SEARCH_TEXT_KEY, EMPTY)
 
     }
+
 
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://itunes.apple.com")
@@ -59,16 +62,54 @@ class SearchActivity : AppCompatActivity() {
         val errorPlaceholder = findViewById<LinearLayout>(R.id.errorPlaceholder)
         val updateButton = findViewById<Button>(R.id.updateButton)
         var recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        val searchHistoryPlaceholder = findViewById<LinearLayout>(R.id.searchHistory)
+        val searchHistoryRecyclerView = findViewById<RecyclerView>(R.id.searchHistoryRecyclerView)
+        val searchHistoryClearButton = findViewById<Button>(R.id.searchHistoryClearButton)
 
         editText.setText(valueFromET)
+
         recyclerView.layoutManager = LinearLayoutManager(this)
+        searchHistoryRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        val playlist = MockObjects.getPlaylist()
-        val tracks = ArrayList<Track>()
 
+        val tracks: MutableList<Track> = mutableListOf()
+        val searchHistoryAdapter = SearchHistoryAdapter()
         val trackAdapter = TrackAdapter()
         trackAdapter.tracks = tracks
         recyclerView.adapter = trackAdapter
+
+
+        val sharedPreferences = getSharedPreferences(SEARCH_HISTORY_PREFERENCES, MODE_PRIVATE)
+        val searchHistory = SearchHistory(sharedPreferences)
+        val history = searchHistory.read()
+
+        /*if (history.isNotEmpty()) {
+            searchHistoryPlaceholder.visibility = View.VISIBLE
+            searchHistoryAdapter.tracks = history
+            searchHistoryRecyclerView.adapter = searchHistoryAdapter
+        } else {
+            searchHistoryPlaceholder.visibility = View.GONE
+        }*/
+
+        trackAdapter.itemClickListener = TrackAdapter.ItemClickListener {
+
+            var i = 0
+            for (track in history) {
+                if (track.trackId == it.trackId) {
+                    history.removeAt(i)
+                    i = 0
+                    break
+                }
+                i++
+            }
+            history.add(0, it)
+            if (history.size > MAX_HISTORY_SIZE) {
+                history.removeAt(history.size - 1)
+            }
+            searchHistory.write(history)
+        }
+
+
 
 
         clearButton.setOnClickListener {
@@ -81,6 +122,29 @@ class SearchActivity : AppCompatActivity() {
             errorPlaceholder.visibility = View.GONE
         }
 
+        editText.setOnFocusChangeListener { view, hasFocus ->
+            if (hasFocus && editText.text.isEmpty()) {
+                val tracksHistory = searchHistory.read()
+                if (tracksHistory.isNotEmpty()) {
+                    searchHistoryPlaceholder.visibility = View.VISIBLE
+                    searchHistoryAdapter.tracks = tracksHistory
+                    searchHistoryRecyclerView.adapter = searchHistoryAdapter
+                } else {
+                    searchHistoryPlaceholder.visibility = View.GONE
+                }
+
+
+
+            } else {
+                searchHistoryPlaceholder.visibility = View.GONE
+            }
+        }
+
+        searchHistoryClearButton.setOnClickListener {
+            searchHistory.clear()
+            searchHistoryPlaceholder.visibility = View.GONE
+        }
+
         val watcher = object : TextWatcher {
             override fun beforeTextChanged(
                 p0: CharSequence?,
@@ -91,10 +155,18 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (p0.isNullOrEmpty()) {
+                if (p0.isNullOrEmpty() && editText?.hasFocus() == true) {
                     clearButton.visibility = View.GONE
+                    if (history.isNotEmpty()) {
+                        searchHistoryPlaceholder.visibility = View.VISIBLE
+                        searchHistoryAdapter.tracks = history
+                        searchHistoryRecyclerView.adapter = searchHistoryAdapter
+                    } else {
+                        searchHistoryPlaceholder.visibility = View.GONE
+                    }
                 } else {
                     clearButton.visibility = View.VISIBLE
+                    searchHistoryPlaceholder.visibility = View.GONE
                     valueFromET = p0.toString()
                 }
             }
