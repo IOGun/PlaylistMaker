@@ -44,4 +44,7 @@
     <dimen name="message_height">88dp</dimen>
     <dimen name="message_width">312dp</dimen>
     <dimen name="message_margin_bottom">24dp</dimen>
+    <!-- Player Activity -->
+    <dimen name="player_border">24dp</dimen>
+    <dimen name="player_margin">16dp</dimen>
 </resources>
