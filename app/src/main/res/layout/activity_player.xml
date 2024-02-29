@@ -95,6 +95,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toStartOf="@id/addToTopButton"
+        app:layout_constraintStart_toEndOf="@id/addToPlaylistButton"
+        app:layout_constraintTop_toBottomOf="@id/artistNameView" />
+
+    <ImageView
+        android:id="@+id/pauseButton"
+        style="@style/PauseButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@id/addToTopButton"
         app:layout_constraintStart_toEndOf="@id/addToPlaylistButton"
         app:layout_constraintTop_toBottomOf="@id/artistNameView" />

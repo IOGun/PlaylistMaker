@@ -111,5 +111,9 @@
         <item name="android:src">@drawable/play_button</item>
     </style>
 
+    <style name="PauseButton">
+        <item name="android:src">@drawable/pause_button</item>
+    </style>
+
 
 </resources>

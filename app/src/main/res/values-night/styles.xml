@@ -101,4 +101,8 @@
         <item name="android:src">@drawable/play_button_dark</item>
     </style>
 
+    <style name="PauseButton">
+        <item name="android:src">@drawable/pause_button_dark</item>
+    </style>
+
 </resources>

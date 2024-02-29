@@ -2,8 +2,11 @@ package com.practicum.playlistmaker
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -13,9 +16,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import com.practicum.playlistmaker.databinding.ActivityFindBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,10 +35,15 @@ class SearchActivity : AppCompatActivity() {
         private const val SEARCH_HISTORY_PREFERENCES = "search_history_preferences"
         private const val MAX_HISTORY_SIZE = 10
         private const val TRACK_KEY = "track"
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }
 
     private var valueFromET = EMPTY
     private var searchText = EMPTY
+
+    private lateinit var binding: ActivityFindBinding
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(SEARCH_TEXT_KEY, valueFromET)
@@ -53,48 +63,18 @@ class SearchActivity : AppCompatActivity() {
 
     private val iTunesService = retrofit.create(ITunesApi::class.java)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_find)
+    private var isClickAllowed = true
+    private val searchRunnable = Runnable { searchRequest() }
+    private val handler = Handler(Looper.getMainLooper())
 
+    private lateinit var sharedPreferences : SharedPreferences
+    private lateinit var searchHistory : SearchHistory
 
-        val clearButton = findViewById<ImageView>(R.id.clearButton)
-        val editText = findViewById<EditText>(R.id.findEditText)
-        val backButton = findViewById<ImageView>(R.id.backImage)
-        val notFoundPlaceholder = findViewById<LinearLayout>(R.id.notFoundPlaceholder)
-        val errorPlaceholder = findViewById<LinearLayout>(R.id.errorPlaceholder)
-        val updateButton = findViewById<Button>(R.id.updateButton)
-        var recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-        val searchHistoryPlaceholder = findViewById<LinearLayout>(R.id.searchHistory)
-        val searchHistoryRecyclerView = findViewById<RecyclerView>(R.id.searchHistoryRecyclerView)
-        val searchHistoryClearButton = findViewById<Button>(R.id.searchHistoryClearButton)
+    private val tracks: MutableList<Track> = mutableListOf()
 
-        editText.setText(valueFromET)
-
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        searchHistoryRecyclerView.layoutManager = LinearLayoutManager(this)
-
-
-        val tracks: MutableList<Track> = mutableListOf()
-        val searchHistoryAdapter = SearchHistoryAdapter()
-        val trackAdapter = TrackAdapter()
-        trackAdapter.tracks = tracks
-        recyclerView.adapter = trackAdapter
-
-
-        val sharedPreferences = getSharedPreferences(SEARCH_HISTORY_PREFERENCES, MODE_PRIVATE)
-        val searchHistory = SearchHistory(sharedPreferences)
-        val history = searchHistory.read()
-
-        fun openPlayerActiviti(track: Track) {
-            val json = Gson()
-            val data = json.toJson(track)
-            val playerIntent = Intent(this, PlayerActivity::class.java)
-            playerIntent.putExtra(TRACK_KEY, data)
-            startActivity(playerIntent)
-        }
-
-        trackAdapter.itemClickListener = TrackAdapter.ItemClickListener {
+    private var history: MutableList<Track> = mutableListOf()
+    private val trackAdapter = TrackAdapter {
+        if (clickDebounce(CLICK_DEBOUNCE_DELAY)) {
             var i = 0
             for (track in history) {
                 if (track.trackId == it.trackId) {
@@ -111,45 +91,66 @@ class SearchActivity : AppCompatActivity() {
             searchHistory.write(history)
             openPlayerActiviti(it)
         }
+    }
+    private val searchHistoryAdapter = SearchHistoryAdapter()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_find)
+
+        binding = ActivityFindBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.findEditText.setText(valueFromET)
+
+        trackAdapter.tracks = tracks
+        binding.recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.recyclerView.adapter = trackAdapter
+
+        sharedPreferences = getSharedPreferences(SEARCH_HISTORY_PREFERENCES, MODE_PRIVATE)
+        searchHistory = SearchHistory(sharedPreferences)
+        history = searchHistory.read()
+        binding.searchHistoryRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.searchHistoryRecyclerView.adapter = searchHistoryAdapter //
+
 
         searchHistoryAdapter.itemClickListener = TrackAdapter.ItemClickListener {
-            openPlayerActiviti(it)
-        }
-
-
-
-
-        clearButton.setOnClickListener {
-            val inputMethodManager =
-                getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-            inputMethodManager?.hideSoftInputFromWindow(editText.windowToken, 0)
-            editText.setText(EMPTY)
-            recyclerView.visibility = View.GONE
-            notFoundPlaceholder.visibility = View.GONE
-            errorPlaceholder.visibility = View.GONE
-        }
-
-        editText.setOnFocusChangeListener { view, hasFocus ->
-            if (hasFocus && editText.text.isEmpty()) {
-                val tracksHistory = searchHistory.read()
-                if (tracksHistory.isNotEmpty()) {
-                    searchHistoryPlaceholder.visibility = View.VISIBLE
-                    searchHistoryAdapter.tracks = tracksHistory
-                    searchHistoryRecyclerView.adapter = searchHistoryAdapter
-                } else {
-                    searchHistoryPlaceholder.visibility = View.GONE
-                }
-
-
-
-            } else {
-                searchHistoryPlaceholder.visibility = View.GONE
+            if (clickDebounce(CLICK_DEBOUNCE_DELAY)) {
+                openPlayerActiviti(it)
             }
         }
 
-        searchHistoryClearButton.setOnClickListener {
+
+        binding.clearButton.setOnClickListener {
+            val inputMethodManager =
+                getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            inputMethodManager?.hideSoftInputFromWindow(binding.findEditText.windowToken, 0)
+            binding.findEditText.setText(EMPTY)
+            binding.recyclerView.isVisible = false
+            binding.notFoundPlaceholder.isVisible = false
+            binding.errorPlaceholder.isVisible = false
+        }
+
+        binding.findEditText.setOnFocusChangeListener { view, hasFocus ->
+            if (hasFocus && binding.findEditText.text.isEmpty()) {
+                val tracksHistory = searchHistory.read()
+                if (tracksHistory.isNotEmpty()) {
+                    binding.searchHistory.isVisible = true
+                    searchHistoryAdapter.tracks = tracksHistory
+                    binding.searchHistoryRecyclerView.adapter = searchHistoryAdapter
+                } else {
+                    binding.searchHistory.isVisible = false
+                }
+
+
+            } else {
+                binding.searchHistory.isVisible = false
+            }
+        }
+
+        binding.searchHistoryClearButton.setOnClickListener {
             searchHistory.clear()
-            searchHistoryPlaceholder.visibility = View.GONE
+            binding.searchHistory.isVisible = false
         }
 
         val watcher = object : TextWatcher {
@@ -162,86 +163,120 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (p0.isNullOrEmpty() && editText?.hasFocus() == true) {
-                    clearButton.visibility = View.GONE
+                searchText = p0.toString()
+                searchDebounce()
+                if (p0.isNullOrEmpty() && binding.findEditText?.hasFocus() == true) {
+                    binding.clearButton.visibility = View.GONE
                     if (history.isNotEmpty()) {
-                        searchHistoryPlaceholder.visibility = View.VISIBLE
+                        binding.searchHistory.isVisible = true
                         searchHistoryAdapter.tracks = history
-                        searchHistoryRecyclerView.adapter = searchHistoryAdapter
+                        binding.searchHistoryRecyclerView.adapter = searchHistoryAdapter
                     } else {
-                        searchHistoryPlaceholder.visibility = View.GONE
+                        binding.searchHistory.isVisible = false
                     }
                 } else {
-                    clearButton.visibility = View.VISIBLE
-                    searchHistoryPlaceholder.visibility = View.GONE
+                    binding.clearButton.isVisible = true
+                    binding.searchHistory.isVisible = false
                     valueFromET = p0.toString()
                 }
+
             }
 
             override fun afterTextChanged(p0: Editable?): Unit {}
         }
 
-        editText.addTextChangedListener(watcher)
+        binding.findEditText.addTextChangedListener(watcher)
 
-        fun iTunesServiceSearch(text: String) {
-            iTunesService
-                .search(text)
-                .enqueue(object : Callback<TrackResponse> {
-                    override fun onResponse(
-                        call: Call<TrackResponse>,
-                        response: Response<TrackResponse>
-                    ) {
-                        if (response.code() == 200) {
-                            tracks.clear()
-                            if (response.body()?.results?.isNotEmpty() == true) {
-                                tracks.addAll(response.body()?.results!!)
-                                trackAdapter.notifyDataSetChanged()
-                            }
-                            if (tracks.isEmpty()) {
-                                //nothing found
-                                recyclerView.visibility = View.GONE
-                                errorPlaceholder.visibility = View.GONE
-                                notFoundPlaceholder.visibility = View.VISIBLE
-                            } else {
-                                // found
-                                notFoundPlaceholder.visibility = View.GONE
-                                errorPlaceholder.visibility = View.GONE
-                                recyclerView.visibility = View.VISIBLE
-                            }
-                        } else {
-                            // something wrong
-                            recyclerView.visibility = View.GONE
-                            notFoundPlaceholder.visibility = View.GONE
-                            errorPlaceholder.visibility = View.VISIBLE
-                        }
-                    }
-
-                    override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                        recyclerView.visibility = View.GONE
-                        notFoundPlaceholder.visibility = View.GONE
-                        errorPlaceholder.visibility = View.VISIBLE
-                    }
-                })
-        }
-
-        editText.setOnEditorActionListener { _, actionId, _ ->
+        binding.findEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                if (editText.text.isNotEmpty()) {
-                    searchText = editText.text.toString()
-                    iTunesServiceSearch(searchText)
-
+                if (binding.findEditText.text.isNotEmpty()) {
+                    searchText = binding.findEditText.text.toString()
+                    searchRequest()
                 }
                 true
             }
             false
         }
 
-        updateButton.setOnClickListener {
-            iTunesServiceSearch(searchText)
-        }
+        binding.updateButton.setOnClickListener { searchRequest() }
 
-        backButton.setOnClickListener {
-            finish()
+        binding.backImage.setOnClickListener { finish() }
+
+    }
+
+
+    private fun openPlayerActiviti(track: Track) {
+        val json = Gson()
+        val data = json.toJson(track)
+        val playerIntent = Intent(this, PlayerActivity::class.java)
+        playerIntent.putExtra(TRACK_KEY, data)
+        startActivity(playerIntent)
+    }
+    private fun clickDebounce(delayTime: Long = 0L): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, delayTime)
+        }
+        return current
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
+    private fun searchRequest() {
+        if (searchText.isNotEmpty()) {
+            binding.notFoundPlaceholder.isVisible = false
+            binding.errorPlaceholder.isVisible = false
+            binding.recyclerView.isVisible = false
+            binding.searchProgressBar.isVisible = true
+            iTunesService
+                .search(binding.findEditText.text.toString())
+                .enqueue(object : Callback<TrackResponse> {
+                    override fun onResponse(
+                        call: Call<TrackResponse>,
+                        response: Response<TrackResponse>
+                    ) {
+                        binding.searchProgressBar.isVisible = false
+                        if (response.code() == 200) {
+                            tracks.clear()
+                            if (response.body()?.results?.isNotEmpty() == true) {
+                                binding.notFoundPlaceholder.isVisible = false
+                                binding.errorPlaceholder.isVisible = false
+                                tracks.addAll(response.body()?.results!!)
+                                trackAdapter.notifyDataSetChanged()
+                                binding.recyclerView.isVisible = true
+                            }
+                            if (tracks.isEmpty()) {
+                                //nothing found
+                                binding.recyclerView.isVisible = false
+                                binding.errorPlaceholder.isVisible = false
+                                binding.notFoundPlaceholder.isVisible = true
+                            } else {
+                                // found
+                                binding.notFoundPlaceholder.isVisible = false
+                                binding.errorPlaceholder.isVisible = false
+                                binding.recyclerView.isVisible = true
+                            }
+                        } else {
+                            // something wrong
+                            binding.searchProgressBar.isVisible = false
+                            binding.recyclerView.isVisible = false
+                            binding.notFoundPlaceholder.isVisible = false
+                            binding.errorPlaceholder.isVisible = true
+                        }
+                    }
+
+                    override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
+                        binding.searchProgressBar.isVisible = false
+                        binding.recyclerView.isVisible = false
+                        binding.notFoundPlaceholder.isVisible = false
+                        binding.errorPlaceholder.isVisible = true
+                    }
+                })
         }
     }
+
 }
