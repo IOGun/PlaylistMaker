@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -14,6 +15,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -27,6 +29,7 @@ class SearchActivity : AppCompatActivity() {
         private const val EMPTY = ""
         private const val SEARCH_HISTORY_PREFERENCES = "search_history_preferences"
         private const val MAX_HISTORY_SIZE = 10
+        private const val TRACK_KEY = "track"
     }
 
     private var valueFromET = EMPTY
@@ -83,16 +86,15 @@ class SearchActivity : AppCompatActivity() {
         val searchHistory = SearchHistory(sharedPreferences)
         val history = searchHistory.read()
 
-        /*if (history.isNotEmpty()) {
-            searchHistoryPlaceholder.visibility = View.VISIBLE
-            searchHistoryAdapter.tracks = history
-            searchHistoryRecyclerView.adapter = searchHistoryAdapter
-        } else {
-            searchHistoryPlaceholder.visibility = View.GONE
-        }*/
+        fun openPlayerActiviti(track: Track) {
+            val json = Gson()
+            val data = json.toJson(track)
+            val playerIntent = Intent(this, PlayerActivity::class.java)
+            playerIntent.putExtra(TRACK_KEY, data)
+            startActivity(playerIntent)
+        }
 
         trackAdapter.itemClickListener = TrackAdapter.ItemClickListener {
-
             var i = 0
             for (track in history) {
                 if (track.trackId == it.trackId) {
@@ -107,6 +109,11 @@ class SearchActivity : AppCompatActivity() {
                 history.removeAt(history.size - 1)
             }
             searchHistory.write(history)
+            openPlayerActiviti(it)
+        }
+
+        searchHistoryAdapter.itemClickListener = TrackAdapter.ItemClickListener {
+            openPlayerActiviti(it)
         }
 
 

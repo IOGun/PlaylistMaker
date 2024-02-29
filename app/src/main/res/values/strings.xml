@@ -21,4 +21,9 @@
     <string name="button_update">Обновить</string>
     <string name="search_history_title">Вы искали</string>
     <string name="search_history_button">Очистить историю</string>
+    <string name="player_trackTime_title">Длительность</string>
+    <string name="player_collectionName_title">Альбом</string>
+    <string name="player_year_title">Год</string>
+    <string name="player_genre_title">Жанр</string>
+    <string name="player_country_title">Страна</string>
 </resources>
