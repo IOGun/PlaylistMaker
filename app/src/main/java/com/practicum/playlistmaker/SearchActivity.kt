@@ -74,7 +74,7 @@ class SearchActivity : AppCompatActivity() {
 
     private var history: MutableList<Track> = mutableListOf()
     private val trackAdapter = TrackAdapter {
-        if (clickDebounce(CLICK_DEBOUNCE_DELAY)) {
+        if (clickDebounce()) {
             var i = 0
             for (track in history) {
                 if (track.trackId == it.trackId) {
@@ -115,7 +115,7 @@ class SearchActivity : AppCompatActivity() {
 
 
         searchHistoryAdapter.itemClickListener = TrackAdapter.ItemClickListener {
-            if (clickDebounce(CLICK_DEBOUNCE_DELAY)) {
+            if (clickDebounce()) {
                 openPlayerActiviti(it)
             }
         }
@@ -204,6 +204,11 @@ class SearchActivity : AppCompatActivity() {
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(searchRunnable)
+    }
+
 
     private fun openPlayerActiviti(track: Track) {
         val json = Gson()
@@ -212,11 +217,11 @@ class SearchActivity : AppCompatActivity() {
         playerIntent.putExtra(TRACK_KEY, data)
         startActivity(playerIntent)
     }
-    private fun clickDebounce(delayTime: Long = 0L): Boolean {
+    private fun clickDebounce(): Boolean {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, delayTime)
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
         }
         return current
     }

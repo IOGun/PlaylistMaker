@@ -29,6 +29,7 @@ class PlayerActivity : AppCompatActivity() {
         private const val STATE_PLAYING = 2
         private const val STATE_PAUSED = 3
         private const val DELAY_TIMER = 300L
+        private const val DP_VALUE = 8f
     }
 
     private lateinit var binding: ActivityPlayerBinding
@@ -60,16 +61,17 @@ class PlayerActivity : AppCompatActivity() {
         binding.yearView.text = track.releaseDate.substring(0, 4)
         trackUrl = track.previewUrl
 
-        preparePlayer()
         binding.playButton.setOnClickListener { playbackControl() }
-        binding.pauseButton.setOnClickListener { playbackControl() }
+
+        val radius = convertDpToPx(DP_VALUE)
 
         Glide.with(binding.trackCover)
             .load(track.artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg"))
-            .centerCrop()
-            .transform(RoundedCorners(8))
+            .transform(RoundedCorners(radius))
             .placeholder(R.drawable.cover_placeholder)
             .into(binding.trackCover)
+
+        preparePlayer()
     }
 
     override fun onPause() {
@@ -82,6 +84,10 @@ class PlayerActivity : AppCompatActivity() {
         mediaPlayer.release()
     }
 
+    private fun convertDpToPx(dp: Float): Int {
+        return (dp * resources.displayMetrics.density + 0.5f).toInt()
+    }
+
     private fun preparePlayer() {
         mediaPlayer.setDataSource(trackUrl)
         mediaPlayer.prepareAsync()
@@ -90,8 +96,8 @@ class PlayerActivity : AppCompatActivity() {
             playerState = STATE_PREPARED
         }
         mediaPlayer.setOnCompletionListener {
-            binding.playButton.isVisible = true
-            binding.pauseButton.isVisible = false
+            binding.playButton.setImageResource(R.drawable.play_button)
+            playerState = STATE_PREPARED
             binding.timerView.text = DEFAULT_TIMER_TEXT
             handler.removeCallbacks(trackTimer)
         }
@@ -106,38 +112,36 @@ class PlayerActivity : AppCompatActivity() {
             STATE_PLAYING -> {
                 pausePlayer()
             }
-
-            STATE_DEFAULT -> {
-                preparePlayer()
-            }
         }
     }
 
     private fun startPlayer() {
         mediaPlayer.start()
-        binding.playButton.isVisible = false
-        binding.pauseButton.isVisible = true
+        binding.playButton.setImageResource(R.drawable.pause_button)
         playerState = STATE_PLAYING
         timer()
     }
 
     private fun pausePlayer() {
         mediaPlayer.pause()
-        binding.pauseButton.isVisible = false
-        binding.playButton.isVisible = true
+        binding.playButton.setImageResource(R.drawable.play_button)
         playerState = STATE_PAUSED
         handler.removeCallbacks(trackTimer)
     }
 
+    private val dateFormat by lazy {
+        SimpleDateFormat(
+            "mm:ss",
+            Locale.getDefault())
+    }
+
     private var trackTimer = object : Runnable {
         override fun run() {
-            binding.timerView.text = SimpleDateFormat(
-                "mm:ss",
-                Locale.getDefault()
-            ).format(mediaPlayer.currentPosition.toLong())
+            binding.timerView.text = dateFormat.format(mediaPlayer.currentPosition.toLong())
             handler.postDelayed(this, DELAY_TIMER)
         }
     }
+
 
     private fun timer() {
         handler.post(trackTimer)

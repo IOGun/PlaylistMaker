@@ -77,21 +77,13 @@
 
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/searchProgressBar"
-        android:layout_width="@dimen/progress_bar_size"
-        android:layout_height="@dimen/progress_bar_size"
-        android:layout_gravity="center"
-        android:indeterminateTint="@color/blue"
-        android:visibility="gone" />
-
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
 
     <LinearLayout
         android:id="@+id/searchHistory"
@@ -126,6 +118,15 @@
             android:layout_marginTop="24dp"
             android:text="@string/search_history_button" />
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/searchProgressBar"
+        android:layout_width="@dimen/progress_bar_size"
+        android:layout_height="@dimen/progress_bar_size"
+        android:layout_gravity="center"
+        android:layout_marginTop="248dp"
+        android:indeterminateTint="@color/blue"
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/notFoundPlaceholder"
@@ -233,6 +234,7 @@
             android:layout_height="wrap_content"
             android:text="@string/button_update" />
     </LinearLayout>
+
 
 </LinearLayout>
 

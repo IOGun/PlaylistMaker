@@ -44,13 +44,24 @@
 
     <ImageView
         android:id="@+id/trackCover"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:layout_constraintEnd_toStartOf="@id/rightBorder"
-        app:layout_constraintStart_toEndOf="@id/leftBorder"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/trackNameView"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="@id/rightBorder"
+        app:layout_constraintStart_toStartOf="@id/leftBorder"
         app:layout_constraintTop_toBottomOf="@id/topBorder"
         tools:src="@drawable/cover_placeholder" />
+
+    <!--ImageView
+        android:id="@+id/trackCover"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@id/rightBorder"
+        app:layout_constraintStart_toStartOf="@id/leftBorder"
+        app:layout_constraintTop_toBottomOf="@id/topBorder"
+        app:layout_constraintBottom_toTopOf="@+id/trackNameView"
+        tools:src="@drawable/cover_placeholder" /-->
 
     <TextView
         android:id="@+id/trackNameView"
@@ -58,6 +69,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textSize="22sp"
         app:layout_constraintEnd_toStartOf="@id/rightBorder"
         app:layout_constraintHorizontal_bias="0.0"
@@ -71,6 +84,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@id/rightBorder"
         app:layout_constraintHorizontal_bias="0.0"
@@ -95,21 +110,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
+        android:background="@android:color/transparent"
         android:visibility="visible"
         app:layout_constraintEnd_toStartOf="@id/addToTopButton"
         app:layout_constraintStart_toEndOf="@id/addToPlaylistButton"
         app:layout_constraintTop_toBottomOf="@id/artistNameView" />
 
-    <ImageView
-        android:id="@+id/pauseButton"
-        style="@style/PauseButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:visibility="gone"
-        app:layout_constraintEnd_toStartOf="@id/addToTopButton"
-        app:layout_constraintStart_toEndOf="@id/addToPlaylistButton"
-        app:layout_constraintTop_toBottomOf="@id/artistNameView" />
 
     <ImageButton
         android:id="@+id/addToTopButton"
@@ -126,12 +132,13 @@
         style="@style/PlayerText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="29dp"
+        android:layout_marginTop="8dp"
         android:text="00:00"
         android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@id/trackTimeMillsTitle"
         app:layout_constraintEnd_toStartOf="@id/rightBorder"
         app:layout_constraintStart_toEndOf="@id/leftBorder"
-        app:layout_constraintTop_toBottomOf="@id/addToPlaylistButton" />
+        app:layout_constraintTop_toBottomOf="@id/playButton" />
 
 
     <!-- 1) Длительность -->
@@ -142,9 +149,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/player_margin"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="36dp"
         android:text="@string/player_trackTime_title"
         android:textColor="@color/text_gray"
+        app:layout_constraintBottom_toTopOf="@id/collectionNameTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTag="trackTimeMillsTitleTag"
         app:layout_constraintTop_toBottomOf="@id/timerView" />
@@ -171,6 +179,7 @@
         android:layout_marginTop="16dp"
         android:text="@string/player_collectionName_title"
         android:textColor="@color/text_gray"
+        app:layout_constraintBottom_toTopOf="@id/yearTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTag="collectionNameTitleTag"
         app:layout_constraintTop_toBottomOf="@id/trackTimeMillsTitle" />
@@ -198,6 +207,7 @@
         android:layout_marginTop="16dp"
         android:text="@string/player_year_title"
         android:textColor="@color/text_gray"
+        app:layout_constraintBottom_toTopOf="@id/genreTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTag="yearTitleTag"
         app:layout_constraintTop_toBottomOf="@id/collectionNameTitle" />
@@ -224,6 +234,7 @@
         android:layout_marginTop="16dp"
         android:text="@string/player_genre_title"
         android:textColor="@color/text_gray"
+        app:layout_constraintBottom_toTopOf="@id/countryTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTag="genreTitleTag"
         app:layout_constraintTop_toBottomOf="@id/yearTitle" />
@@ -251,6 +262,7 @@
         android:layout_marginBottom="20dp"
         android:text="@string/player_country_title"
         android:textColor="@color/text_gray"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTag="countryTitleTag"
         app:layout_constraintTop_toBottomOf="@id/genreTitle" />
