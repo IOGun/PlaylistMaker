@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.search
 
 import android.content.Context
 import android.content.Intent
@@ -12,20 +12,18 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import com.practicum.playlistmaker.Creator
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.data.network.SearchHistory
 import com.practicum.playlistmaker.databinding.ActivityFindBinding
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.practicum.playlistmaker.domain.api.TrackInteractor
+import com.practicum.playlistmaker.domain.models.AppCollectionStatus
+import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.domain.models.TrackSearchResult
+import com.practicum.playlistmaker.presentation.player.PlayerActivity
 
 
 class SearchActivity : AppCompatActivity() {
@@ -43,6 +41,7 @@ class SearchActivity : AppCompatActivity() {
     private var searchText = EMPTY
 
     private lateinit var binding: ActivityFindBinding
+    private lateinit var trackInteractor: TrackInteractor
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -56,19 +55,19 @@ class SearchActivity : AppCompatActivity() {
     }
 
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://itunes.apple.com")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    /* private val retrofit = Retrofit.Builder()
+         .baseUrl("https://itunes.apple.com")
+         .addConverterFactory(GsonConverterFactory.create())
+         .build()
 
-    private val iTunesService = retrofit.create(ITunesApi::class.java)
+     private val iTunesService = retrofit.create(ITunesApi::class.java)*/
 
     private var isClickAllowed = true
     private val searchRunnable = Runnable { searchRequest() }
     private val handler = Handler(Looper.getMainLooper())
 
-    private lateinit var sharedPreferences : SharedPreferences
-    private lateinit var searchHistory : SearchHistory
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var searchHistory: SearchHistory
 
     private val tracks: MutableList<Track> = mutableListOf()
 
@@ -101,16 +100,20 @@ class SearchActivity : AppCompatActivity() {
         binding = ActivityFindBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        trackInteractor = Creator.provideTrackInteractor()
+
         binding.findEditText.setText(valueFromET)
 
         trackAdapter.tracks = tracks
-        binding.recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.recyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.recyclerView.adapter = trackAdapter
 
         sharedPreferences = getSharedPreferences(SEARCH_HISTORY_PREFERENCES, MODE_PRIVATE)
         searchHistory = SearchHistory(sharedPreferences)
         history = searchHistory.read()
-        binding.searchHistoryRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.searchHistoryRecyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.searchHistoryRecyclerView.adapter = searchHistoryAdapter //
 
 
@@ -217,6 +220,7 @@ class SearchActivity : AppCompatActivity() {
         playerIntent.putExtra(TRACK_KEY, data)
         startActivity(playerIntent)
     }
+
     private fun clickDebounce(): Boolean {
         val current = isClickAllowed
         if (isClickAllowed) {
@@ -237,50 +241,48 @@ class SearchActivity : AppCompatActivity() {
             binding.errorPlaceholder.isVisible = false
             binding.recyclerView.isVisible = false
             binding.searchProgressBar.isVisible = true
-            iTunesService
-                .search(binding.findEditText.text.toString())
-                .enqueue(object : Callback<TrackResponse> {
-                    override fun onResponse(
-                        call: Call<TrackResponse>,
-                        response: Response<TrackResponse>
-                    ) {
-                        binding.searchProgressBar.isVisible = false
-                        if (response.code() == 200) {
-                            tracks.clear()
-                            if (response.body()?.results?.isNotEmpty() == true) {
-                                binding.notFoundPlaceholder.isVisible = false
-                                binding.errorPlaceholder.isVisible = false
-                                tracks.addAll(response.body()?.results!!)
-                                trackAdapter.notifyDataSetChanged()
-                                binding.recyclerView.isVisible = true
-                            }
-                            if (tracks.isEmpty()) {
-                                //nothing found
-                                binding.recyclerView.isVisible = false
-                                binding.errorPlaceholder.isVisible = false
-                                binding.notFoundPlaceholder.isVisible = true
-                            } else {
-                                // found
-                                binding.notFoundPlaceholder.isVisible = false
-                                binding.errorPlaceholder.isVisible = false
-                                binding.recyclerView.isVisible = true
-                            }
-                        } else {
-                            // something wrong
+
+
+            trackInteractor.searchTrack(
+                searchText, consumer =
+                object : TrackInteractor.TrackConsumer {
+                    override fun consume(foundTrack: TrackSearchResult) {
+                        handler.post {
                             binding.searchProgressBar.isVisible = false
-                            binding.recyclerView.isVisible = false
-                            binding.notFoundPlaceholder.isVisible = false
-                            binding.errorPlaceholder.isVisible = true
+                            when (foundTrack.status) {
+                                AppCollectionStatus.RECEIVED -> {
+                                    // found
+                                    if (foundTrack.tracks.isNotEmpty()) {
+                                        tracks.clear()
+                                        tracks.addAll(foundTrack.tracks)
+                                        trackAdapter.notifyDataSetChanged()
+                                        binding.recyclerView.isVisible = true
+                                    } else {
+                                        //nothing found
+                                        binding.recyclerView.isVisible = false
+                                        binding.errorPlaceholder.isVisible = false
+                                        binding.notFoundPlaceholder.isVisible = true
+                                    }
+                                }
+                                AppCollectionStatus.ERROR -> {
+                                    // something wrong
+                                    binding.searchProgressBar.isVisible = false
+                                    binding.recyclerView.isVisible = false
+                                    binding.notFoundPlaceholder.isVisible = false
+                                    binding.errorPlaceholder.isVisible = true
+                                }
+                                else -> {
+                                    // something wrong
+                                    binding.searchProgressBar.isVisible = false
+                                    binding.recyclerView.isVisible = false
+                                    binding.notFoundPlaceholder.isVisible = false
+                                    binding.errorPlaceholder.isVisible = true
+                                }
+                            }
                         }
                     }
-
-                    override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                        binding.searchProgressBar.isVisible = false
-                        binding.recyclerView.isVisible = false
-                        binding.notFoundPlaceholder.isVisible = false
-                        binding.errorPlaceholder.isVisible = true
-                    }
-                })
+                }
+            )
         }
     }
 

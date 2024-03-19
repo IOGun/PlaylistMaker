@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.settings
 
 import android.content.Intent
 import android.net.Uri
@@ -7,8 +7,8 @@ import android.os.Bundle
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Switch
-import androidx.appcompat.app.AppCompatDelegate
-import java.net.URI
+import com.practicum.playlistmaker.App
+import com.practicum.playlistmaker.R
 
 class SettingsActivity : AppCompatActivity() {
     companion object{
