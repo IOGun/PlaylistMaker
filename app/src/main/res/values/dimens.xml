@@ -47,4 +47,6 @@
     <!-- Player Activity -->
     <dimen name="player_border">24dp</dimen>
     <dimen name="player_margin">16dp</dimen>
+    <!-- Progress Bar -->
+    <dimen name="progress_bar_size">44dp</dimen>
 </resources>
