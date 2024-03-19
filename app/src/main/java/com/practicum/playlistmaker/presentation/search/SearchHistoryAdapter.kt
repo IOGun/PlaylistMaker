@@ -1,7 +1,8 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.search
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.practicum.playlistmaker.domain.models.Track
 
 class SearchHistoryAdapter(): RecyclerView.Adapter<TrackViewHolder>() {
     var tracks: MutableList<Track> = mutableListOf()
