@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.practicum.playlistmaker.domain.search.model.Track
 import com.practicum.playlistmaker.domain.player.PlayerInteractor
 import com.practicum.playlistmaker.domain.player.model.PlayerProgress
+import com.practicum.playlistmaker.domain.player.model.PlayerStatus
 
 class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewModel() {
 
@@ -49,11 +50,11 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
     fun playbackControl() {
         privPlayersProgress.value = updatePlayerProgress()
         when (privPlayersProgress.value!!.status) {
-            STATE_PLAYING -> {
+            PlayerStatus.STATE_PLAYING -> {
                 playerInteractor.pausePlayer()
                 privPlayersProgress.value = updatePlayerProgress()
             }
-            STATE_PREPARED, STATE_PAUSED, STATE_DEFAULT -> {
+            PlayerStatus.STATE_PREPARED, PlayerStatus.STATE_PAUSED, PlayerStatus.STATE_DEFAULT -> {
                 playerInteractor.startPlayer()
                 progressHandler.post(updatePlayerProgressRunnable())
                 privPlayersProgress.value = updatePlayerProgress()
@@ -70,11 +71,11 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
             override fun run() {
                 privPlayersProgress.value = updatePlayerProgress()
                 when (privPlayersProgress.value!!.status) {
-                    STATE_PLAYING -> {
+                    PlayerStatus.STATE_PLAYING -> {
                         progressHandler.postDelayed(this, 300)
                     }
 
-                    STATE_PAUSED -> {
+                    PlayerStatus.STATE_PAUSED -> {
                         progressHandler.removeCallbacks(this)
                     }
 

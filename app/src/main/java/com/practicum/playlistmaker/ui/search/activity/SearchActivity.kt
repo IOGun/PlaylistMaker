@@ -9,7 +9,6 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.practicum.playlistmaker.R
@@ -21,7 +20,7 @@ import com.practicum.playlistmaker.ui.search.adapters.SearchHistoryAdapter
 import com.practicum.playlistmaker.ui.search.adapters.TrackAdapter
 import com.practicum.playlistmaker.ui.player.activity.PlayerActivity
 import com.practicum.playlistmaker.ui.search.view_model.SearchViewModel
-import com.practicum.playlistmaker.ui.search.view_model.SearchViewModelFactory
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class SearchActivity : AppCompatActivity() {
@@ -32,10 +31,12 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityFindBinding
-
+/*
     private val viewModel: SearchViewModel by lazy {
         ViewModelProvider(this, SearchViewModelFactory())[SearchViewModel::class.java]
-    }
+    } */
+
+    private val viewModel by viewModel<SearchViewModel>()
 
 
     private lateinit var searchTracks: ArrayList<Track>

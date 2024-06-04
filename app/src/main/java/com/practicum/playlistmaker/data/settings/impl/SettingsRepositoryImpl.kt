@@ -2,22 +2,18 @@ package com.practicum.playlistmaker.data.settings.impl
 
 import android.app.Application
 import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
 import com.practicum.playlistmaker.domain.settings.SettingsRepository
 import java.io.Serializable
 
-class SettingsRepositoryImpl(app: Application): SettingsRepository, Serializable, Application() {
+class SettingsRepositoryImpl(private val sharedPrefs: SharedPreferences): SettingsRepository, Serializable, Application() {
 
 
     private companion object {
-        const val APP_THEME_NAME = "theme_shared_preferences"
         const val APP_THEME_SWITCHER = "theme_switch_status"
     }
 
-    private val sharedPrefs = app.getSharedPreferences(
-        APP_THEME_NAME,
-        MODE_PRIVATE
-    )
 
     private var darkTheme = getThemeSettings()
 
