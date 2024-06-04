@@ -24,7 +24,7 @@ val repositoryModule = module {
     }
 
     factory<PlayerRepository> {
-        PlayerRepositoryImpl(get()) // ?? Look at pRI
+        PlayerRepositoryImpl(get())
     }
 
     factory<SettingsRepository> {
