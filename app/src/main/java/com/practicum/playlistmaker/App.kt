@@ -1,11 +1,12 @@
 package com.practicum.playlistmaker
 
 import android.app.Application
-import android.content.res.Resources.Theme
 import androidx.appcompat.app.AppCompatDelegate
+import com.practicum.playlistmaker.creator.Creator
+import com.practicum.playlistmaker.domain.settings.SettingsInteractor
 
 class App : Application() {
-    companion object {
+   /* companion object {
         private const val DAY_NIGHT_PREFERENCE = "day_night_theme"
         private const val DAY_NIGHT_KEY = "day_night"
     }
@@ -28,5 +29,27 @@ class App : Application() {
                 AppCompatDelegate.MODE_NIGHT_NO
             }
         )
+    } */
+
+    private lateinit var themeSettingsInteractor: SettingsInteractor
+
+    override fun onCreate() {
+        super.onCreate()
+        Creator.initApplication(this)
+        themeSettingsInteractor =
+            Creator.provideSettingsInteractor()
+        darkThemeSwitch(themeSettingsInteractor.getThemeSettings())
+    }
+
+
+    fun darkThemeSwitch(darkThemeEnabled: Boolean) { //switchTheme
+        AppCompatDelegate.setDefaultNightMode(
+            if (darkThemeEnabled) {
+                AppCompatDelegate.MODE_NIGHT_YES
+            } else {
+                AppCompatDelegate.MODE_NIGHT_NO
+            }
+        )
+        themeSettingsInteractor.updateThemeSetting(darkThemeEnabled)
     }
 }
