@@ -43,6 +43,10 @@
         <item name="android:background">@color/black</item>
     </style>
 
+    <style name="Mediateka">
+        <item name="android:background">@color/black</item>
+    </style>
+
     <style name="FragmentPlaylist">
         <item name="android:background">@color/black</item>
     </style>
