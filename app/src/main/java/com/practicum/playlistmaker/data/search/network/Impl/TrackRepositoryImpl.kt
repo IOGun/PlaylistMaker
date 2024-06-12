@@ -5,7 +5,6 @@ import com.practicum.playlistmaker.data.search.dto.TrackDto
 import com.practicum.playlistmaker.data.search.dto.TrackRequest
 import com.practicum.playlistmaker.data.search.dto.TrackResponse
 import com.practicum.playlistmaker.domain.search.TrackRepository
-import com.practicum.playlistmaker.domain.player.model.AppCollectionStatus
 import com.practicum.playlistmaker.domain.search.model.Status
 import com.practicum.playlistmaker.domain.search.model.Track
 import com.practicum.playlistmaker.domain.search.model.TrackSearchResult

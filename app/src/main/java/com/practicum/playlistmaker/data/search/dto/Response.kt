@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.data.search.dto
 
-import com.practicum.playlistmaker.domain.player.model.AppCollectionStatus
 import com.practicum.playlistmaker.domain.search.model.Status
 
 open class Response() {

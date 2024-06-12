@@ -2,19 +2,17 @@ package com.practicum.playlistmaker.ui.player.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
-import com.practicum.playlistmaker.creator.Creator
+//import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
 import com.practicum.playlistmaker.domain.player.model.PlayerProgress
+import com.practicum.playlistmaker.domain.player.model.PlayerStatus
 import com.practicum.playlistmaker.domain.search.model.Track
-import com.practicum.playlistmaker.ui.player.view_model.PlayerFactory
 import com.practicum.playlistmaker.ui.player.view_model.PlayerViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -22,22 +20,11 @@ class PlayerActivity : AppCompatActivity() {
     companion object {
         private const val INTENT_KEY = "track"
         private const val EMPTY = ""
-        //private const val DEFAULT_TIMER_TEXT = "00:00"
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
-        //private const val DELAY_TIMER = 300L
         private const val DP_VALUE = 8f
     }
 
     private lateinit var binding: ActivityPlayerBinding
-    private val viewModel by lazy { ViewModelProvider(this, PlayerFactory(Creator.providePlayerInteractor())) [PlayerViewModel::class.java] }
-    //private var playerInteractor = Creator.providePlayerInteractor() //
-
-    //private val timerHandler = Handler(Looper.getMainLooper())
-
-    //private lateinit var playerState: PlayerProgress
+    private val viewModel by viewModel<PlayerViewModel>()
     private var trackUrl: String? = EMPTY
 
 
@@ -66,7 +53,6 @@ class PlayerActivity : AppCompatActivity() {
         trackUrl = track.previewUrl
 
         binding.playButton.setOnClickListener {
-            //playbackControl()
             viewModel.playbackControl()
         }
 
@@ -78,10 +64,7 @@ class PlayerActivity : AppCompatActivity() {
             .placeholder(R.drawable.cover_placeholder)
             .into(binding.trackCover)
 
-        //preparePlayer(track) //->
         viewModel.preparePlayer(track)
-        //playerInteractor.preparePlayer(track)
-        //playerState = playerInteractor.getPlayerState()
 
         viewModel.playersProgress.observe(this) { playerProgress ->
             playbackControl(playerProgress)
@@ -90,7 +73,6 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        //playerInteractor.pausePlayer()
         viewModel.pausePlayer()
     }
 
@@ -107,11 +89,11 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun playbackControl(playerStatus: PlayerProgress) {
         when (playerStatus.status) {
-            STATE_PLAYING -> {
+            PlayerStatus.STATE_PLAYING -> {
                 binding.timerView.text = dateFormat.format(playerStatus.position.toLong())
                 binding.playButton.setImageResource(R.drawable.pause_button)
             }
-            STATE_PREPARED, STATE_PAUSED, STATE_DEFAULT -> {
+            PlayerStatus.STATE_PREPARED, PlayerStatus.STATE_PAUSED, PlayerStatus.STATE_DEFAULT -> {
                 binding.playButton.setImageResource(R.drawable.play_button)
             }
         }
