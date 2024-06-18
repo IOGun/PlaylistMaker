@@ -26,6 +26,12 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
 
+    companion object {
+        private const val SEARCH_TEXT_KEY = "TEXT_KEY"
+        private const val EMPTY = ""
+        private const val TRACK_KEY = "track"
+    }
+
     private lateinit var binding: FragmentFindBinding
 
     private val viewModel by viewModel<SearchViewModel>()
@@ -295,9 +301,4 @@ class SearchFragment : Fragment() {
         }
     }
 
-    companion object {
-        private const val SEARCH_TEXT_KEY = "TEXT_KEY"
-        private const val EMPTY = ""
-        private const val TRACK_KEY = "track"
-    }
 }
