@@ -12,32 +12,46 @@ class SettingsViewModel (
     private val settingsInteractor: SettingsInteractor
 ) : ViewModel() {
 
-    private val privSettingEvent = MutableLiveData<Intent>()
-    val settingEvent: LiveData<Intent> = privSettingEvent
+    private val _isThemeSwitcherEnabled = MutableLiveData(false)
+    val isThemeSwitcherEnabled: LiveData<Boolean> = _isThemeSwitcherEnabled
 
-    private val getDarkTheme = MutableLiveData(getThemeSettings())
-    val darkTheme: LiveData<Boolean> = getDarkTheme
 
-    fun shareApp() {
-        privSettingEvent.value = sharingInteractor.shareApp()
+    private val _settingsIntentEvent = MutableLiveData<Intent>()
+    val settingsIntentEvent: LiveData<Intent> = _settingsIntentEvent
+
+
+    fun onShareClick() {
+        _settingsIntentEvent.value = sharingInteractor.shareApp()
     }
 
-    fun openSupport() {
-        privSettingEvent.value = sharingInteractor.openSupport()
+    fun onSupportClick() {
+        _settingsIntentEvent.value = sharingInteractor.openSupport()
     }
 
-    fun openTerms() {
-        privSettingEvent.value = sharingInteractor.openTerms()
+    fun onTermsClick() {
+        _settingsIntentEvent.value = sharingInteractor.openTerms()
     }
 
-    private fun getThemeSettings(): Boolean {
-        return settingsInteractor.getThemeSettings()
+    fun setTheme(status: SettingsInteractor.NightLightTheme) {
+        settingsInteractor.setThemeToShared(status)
+        getTheme()
     }
-    fun updateThemeSetting(checked: Boolean) {
-        settingsInteractor.updateThemeSetting(checked)
+
+    private fun getTheme(): SettingsInteractor.NightLightTheme {
+        val theme = settingsInteractor.applyTheme()
+        _isThemeSwitcherEnabled.value = when (theme) {
+            SettingsInteractor.NightLightTheme.Light -> false
+            SettingsInteractor.NightLightTheme.Night -> true
+        }
+        return theme
     }
-    fun darkThemeSwitch(theme: Boolean) {
-        settingsInteractor.darkThemeSwitch(theme)
+
+    fun onThemeSwitcherChecked(checked: Boolean) {
+        if (checked) {
+            setTheme(SettingsInteractor.NightLightTheme.Night)
+        } else {
+            setTheme(SettingsInteractor.NightLightTheme.Light)
+        }
     }
 
 }
