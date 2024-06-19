@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Settings"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.settings.fragment.SettingsFragment">
+
+
+    <LinearLayout
+        android:id="@+id/linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp">
+
+        <TextView
+            android:id="@+id/txt_setup_menu"
+            style="@style/HeaderStyle"
+            android:textSize="22sp"
+            android:layout_marginBottom="24dp"
+            android:layout_width = "match_parent"
+            android:layout_height = "wrap_content"
+            android:gravity = "fill_vertical"
+            android:text="@string/setting_screen_title" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp">
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/darkThemeSwitch"
+            android:text="@string/setting_screen_dark_theme"
+            style="@style/MenuItemStyle"
+            android:textSize="16sp"
+            android:layout_gravity="start"
+            android:paddingVertical="21dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:paddingVertical="21dp">
+
+            <TextView
+                style="@style/MenuItemStyle"
+                android:textSize="16sp"
+                android:layout_width = "match_parent"
+                android:layout_height = "match_parent"
+                android:layout_gravity = "start"
+                android:text="@string/setting_screen_share" />
+
+            <ImageView
+                android:id="@+id/shareFrame"
+                style="@style/IconStyle"
+                android:layout_gravity="end"
+                app:srcCompat="@drawable/share"
+                tools:ignore="ImageContrastCheck" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/supportFrame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:paddingVertical="21dp">
+
+            <TextView
+                style="@style/MenuItemStyle"
+                android:textSize="16sp"
+                android:layout_width = "wrap_content"
+                android:layout_height = "wrap_content"
+                android:layout_gravity = "start"
+                android:text="@string/setting_screen_support" />
+
+            <ImageView
+                style="@style/IconStyle"
+                android:layout_gravity="end"
+                app:srcCompat="@drawable/support"
+                tools:ignore="ImageContrastCheck" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/termsFrame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:paddingVertical="21dp">
+
+            <TextView
+                style="@style/MenuItemStyle"
+                android:textSize="16sp"
+                android:layout_width = "wrap_content"
+                android:layout_height = "wrap_content"
+                android:layout_gravity = "start"
+                android:text="@string/setting_screen_terms" />
+
+            <ImageView
+                style="@style/IconStyle"
+                android:layout_gravity="end"
+                app:srcCompat="@drawable/arrow_f"
+                tools:ignore="ImageContrastCheck" />
+        </FrameLayout>
+    </LinearLayout>
+
+</LinearLayout>

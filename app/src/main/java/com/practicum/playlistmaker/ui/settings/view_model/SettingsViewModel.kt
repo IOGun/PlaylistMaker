@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.practicum.playlistmaker.domain.settings.SettingsInteractor
+import com.practicum.playlistmaker.ui.settings.utilits.WasOpened
 import com.practicum.playlistmaker.domain.sharing.SharingInteractor
 
 class SettingsViewModel (
@@ -12,32 +13,49 @@ class SettingsViewModel (
     private val settingsInteractor: SettingsInteractor
 ) : ViewModel() {
 
-    private val privSettingEvent = MutableLiveData<Intent>()
-    val settingEvent: LiveData<Intent> = privSettingEvent
+    private val _isThemeSwitcherEnabled = MutableLiveData(false)
+    val isThemeSwitcherEnabled: LiveData<Boolean> = _isThemeSwitcherEnabled
 
-    private val getDarkTheme = MutableLiveData(getThemeSettings())
-    val darkTheme: LiveData<Boolean> = getDarkTheme
-
-    fun shareApp() {
-        privSettingEvent.value = sharingInteractor.shareApp()
+    init {
+        getTheme()
     }
 
-    fun openSupport() {
-        privSettingEvent.value = sharingInteractor.openSupport()
+
+    private val _settingsIntentEvent = MutableLiveData<WasOpened<Intent>>()
+    val settingsIntentEvent: LiveData<WasOpened<Intent>> = _settingsIntentEvent
+
+    fun onShareClick() {
+        _settingsIntentEvent.value = WasOpened(sharingInteractor.shareApp())
     }
 
-    fun openTerms() {
-        privSettingEvent.value = sharingInteractor.openTerms()
+    fun onSupportClick() {
+        _settingsIntentEvent.value = WasOpened(sharingInteractor.openSupport())
     }
 
-    private fun getThemeSettings(): Boolean {
-        return settingsInteractor.getThemeSettings()
+    fun onTermsClick() {
+        _settingsIntentEvent.value = WasOpened(sharingInteractor.openTerms())
     }
-    fun updateThemeSetting(checked: Boolean) {
-        settingsInteractor.updateThemeSetting(checked)
+
+    fun setTheme(status: SettingsInteractor.NightLightTheme) {
+        settingsInteractor.setThemeToShared(status)
+        getTheme()
     }
-    fun darkThemeSwitch(theme: Boolean) {
-        settingsInteractor.darkThemeSwitch(theme)
+
+    private fun getTheme(): SettingsInteractor.NightLightTheme {
+        val theme = settingsInteractor.applyTheme()
+        _isThemeSwitcherEnabled.value = when (theme) {
+            SettingsInteractor.NightLightTheme.Light -> false
+            SettingsInteractor.NightLightTheme.Night -> true
+        }
+        return theme
+    }
+
+    fun onThemeSwitcherChecked(checked: Boolean) {
+        if (checked) {
+            setTheme(SettingsInteractor.NightLightTheme.Night)
+        } else {
+            setTheme(SettingsInteractor.NightLightTheme.Light)
+        }
     }
 
 }

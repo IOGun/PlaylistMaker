@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Find"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.search.fragment.SearchFragment">
+
+
+    <LinearLayout
+        android:id="@+id/linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp">
+
+        <TextView
+            style="@style/HeaderStyle"
+            android:textSize="22sp"
+            android:layout_marginBottom="12dp"
+            android:layout_width = "match_parent"
+            android:layout_height = "wrap_content"
+            android:gravity = "fill_vertical"
+            android:text="@string/find_screen_title" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/container_search"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        style="@style/FragmentSearchContainerStyle"
+        tools:layout_editor_absoluteX="20dp">
+
+        <ImageView
+            style="@style/FragmentSearchIconStyle"
+            android:layout_marginStart="12dp"
+            android:src="@drawable/find" />
+
+        <EditText
+            android:id="@+id/findEditText"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType ="text"
+            style="@style/FragmentSearchEditTextStyle"
+            android:imeOptions="actionDone"
+            android:singleLine="true"/>
+
+        <ImageView
+            android:id="@+id/clearButton"
+            style="@style/FragmentClearIconStyle"
+            android:layout_marginEnd="12dp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        style="@style/FragmentRecyclerViewStyle"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/track_view"
+        tools:visibility="gone"/>
+
+    <LinearLayout
+        android:id="@+id/searchHistory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <TextView
+            android:layout_width = "match_parent"
+            android:layout_height = "wrap_content"
+            style="@style/FragmentTextStyleMedium"
+            android:textSize="19sp"
+            android:gravity= "center"
+            android:text="@string/search_history_title"
+            android:paddingTop="18dp"
+            android:paddingBottom="12dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/searchHistoryRecyclerView"
+            android:layout_width = "match_parent"
+            android:layout_height = "wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            tools:listitem="@layout/track_view"
+            tools:itemCount="10"/>
+
+        <Button
+            android:id="@+id/searchHistoryClearButton"
+            style="@style/FragmentSearchButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/search_history_button"
+            android:layout_marginTop="20dp"
+            android:layout_weight="0"/>
+
+    </LinearLayout>
+
+
+    <FrameLayout
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/blue" />
+
+    </FrameLayout >
+
+
+    <LinearLayout
+        android:id="@+id/notFoundPlaceholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_not_found" />
+
+        <TextView
+            style="@style/FragmentTextStyleMedium"
+            android:textSize="19sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/not_found" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/error_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_error" />
+
+        <TextView
+            style="@style/FragmentTextStyleMedium"
+            android:textSize="19sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/error" />
+
+        <Button
+            android:id="@+id/updateButton"
+            style="@style/FragmentSearchButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_update" />
+
+    </LinearLayout>
+
+</LinearLayout>
