@@ -29,8 +29,11 @@ class SettingsFragment : Fragment() {
         viewModel.isThemeSwitcherEnabled.observe(viewLifecycleOwner) { isChecked ->
             binding.darkThemeSwitch.isChecked = isChecked
         }
-        viewModel.settingsIntentEvent.observe(viewLifecycleOwner) { intent ->
-            startActivity(intent)
+
+        viewModel.settingsIntentEvent.observe(viewLifecycleOwner) { activity ->
+            activity.wasntOpen()?.let { intent ->
+                startActivity(intent)
+            }
         }
 
 

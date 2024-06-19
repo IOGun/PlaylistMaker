@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.practicum.playlistmaker.domain.settings.SettingsInteractor
+import com.practicum.playlistmaker.ui.settings.utilits.WasOpened
 import com.practicum.playlistmaker.domain.sharing.SharingInteractor
 
 class SettingsViewModel (
@@ -15,21 +16,24 @@ class SettingsViewModel (
     private val _isThemeSwitcherEnabled = MutableLiveData(false)
     val isThemeSwitcherEnabled: LiveData<Boolean> = _isThemeSwitcherEnabled
 
+    init {
+        getTheme()
+    }
 
-    private val _settingsIntentEvent = MutableLiveData<Intent>()
-    val settingsIntentEvent: LiveData<Intent> = _settingsIntentEvent
 
+    private val _settingsIntentEvent = MutableLiveData<WasOpened<Intent>>()
+    val settingsIntentEvent: LiveData<WasOpened<Intent>> = _settingsIntentEvent
 
     fun onShareClick() {
-        _settingsIntentEvent.value = sharingInteractor.shareApp()
+        _settingsIntentEvent.value = WasOpened(sharingInteractor.shareApp())
     }
 
     fun onSupportClick() {
-        _settingsIntentEvent.value = sharingInteractor.openSupport()
+        _settingsIntentEvent.value = WasOpened(sharingInteractor.openSupport())
     }
 
     fun onTermsClick() {
-        _settingsIntentEvent.value = sharingInteractor.openTerms()
+        _settingsIntentEvent.value = WasOpened(sharingInteractor.openTerms())
     }
 
     fun setTheme(status: SettingsInteractor.NightLightTheme) {
