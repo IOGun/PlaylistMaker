@@ -1,14 +1,16 @@
 package com.practicum.playlistmaker.ui.player.view_model
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.domain.search.model.Track
 import com.practicum.playlistmaker.domain.player.PlayerInteractor
 import com.practicum.playlistmaker.domain.player.model.PlayerProgress
 import com.practicum.playlistmaker.domain.player.model.PlayerStatus
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewModel() {
 
@@ -19,7 +21,7 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
         private const val STATE_PAUSED = 3
     }
 
-    private val progressHandler = Handler(Looper.getMainLooper())
+    private var job: Job? = null
 
     private val privPlayersProgress: MutableLiveData<PlayerProgress> =
         MutableLiveData(updatePlayerProgress())
@@ -33,31 +35,43 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
 
     fun pausePlayer() {
         playerInteractor.pausePlayer()
-        privPlayersProgress.value = updatePlayerProgress()
+        job?.cancel()
     }
 
     fun startPlayer() {
         playerInteractor.startPlayer()
-        progressHandler.post(updatePlayerProgressRunnable())
-        privPlayersProgress.value = updatePlayerProgress()
+        job?.cancel()
+        job = viewModelScope.launch {
+            while (true) {
+                privPlayersProgress.value = updatePlayerProgress()
+                when (privPlayersProgress.value!!.status) {
+                    PlayerStatus.STATE_PLAYING -> {
+                        delay(300L)
+                    }
+                    PlayerStatus.STATE_PAUSED -> {
+                        break
+                    }
+                    else -> {
+                        break
+                    }
+                }
+            }
+        }
     }
 
     fun destroyPlayer() {
-        progressHandler.removeCallbacks(updatePlayerProgressRunnable())
         playerInteractor.destroyPlayer()
+        job?.cancel()
     }
 
     fun playbackControl() {
         privPlayersProgress.value = updatePlayerProgress()
         when (privPlayersProgress.value!!.status) {
             PlayerStatus.STATE_PLAYING -> {
-                playerInteractor.pausePlayer()
-                privPlayersProgress.value = updatePlayerProgress()
+                pausePlayer()
             }
             PlayerStatus.STATE_PREPARED, PlayerStatus.STATE_PAUSED, PlayerStatus.STATE_DEFAULT -> {
-                playerInteractor.startPlayer()
-                progressHandler.post(updatePlayerProgressRunnable())
-                privPlayersProgress.value = updatePlayerProgress()
+                startPlayer()
             }
         }
     }
@@ -65,28 +79,5 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
     private fun updatePlayerProgress(): PlayerProgress {
         return playerInteractor.getPlayerState()
     }
-
-    private fun updatePlayerProgressRunnable(): Runnable {
-        return object : Runnable {
-            override fun run() {
-                privPlayersProgress.value = updatePlayerProgress()
-                when (privPlayersProgress.value!!.status) {
-                    PlayerStatus.STATE_PLAYING -> {
-                        progressHandler.postDelayed(this, 300)
-                    }
-
-                    PlayerStatus.STATE_PAUSED -> {
-                        progressHandler.removeCallbacks(this)
-                    }
-
-                    else -> {
-                        progressHandler.removeCallbacks(this)
-                    }
-                }
-
-            }
-        }
-    }
-
 
 }

@@ -1,20 +1,22 @@
 package com.practicum.playlistmaker.ui.search.view_model
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.domain.search.HistoryInteractor
 import com.practicum.playlistmaker.domain.search.TrackInteractor
 import com.practicum.playlistmaker.domain.search.model.Status
 import com.practicum.playlistmaker.domain.search.model.Track
 import com.practicum.playlistmaker.domain.search.model.TrackSearchResult
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     val trackInteractor: TrackInteractor,
     val historyInteractor: HistoryInteractor,
-) : ViewModel(), TrackInteractor.TrackConsumer {
+) : ViewModel() {
 
     companion object {
         private const val EMPTY = ""
@@ -29,41 +31,18 @@ class SearchViewModel(
 
     private var isClickAllowed = true
 
-    private val handler = Handler(Looper.getMainLooper())
-    private val searchRunnable = Runnable {
-        privFoundTracks.postValue(getStatus())
-        performSearch()
-    }
+    private var job: Job? = null
 
     var textSearch: String = EMPTY
 
-    private fun performSearch() {
+    private suspend fun performSearch() {
         if (textSearch.isNotEmpty()) {
-            trackInteractor.searchTrack(
-                textSearch, this
-            )
-        }
-    }
-
-    override fun consume(foundTracks: TrackSearchResult) {
-        when (foundTracks.status) {
-            Status.RECEIVED -> {
-                this.privFoundTracks.postValue(foundTracks)
-            }
-
-            Status.NOT_FOUND, Status.ERROR, Status.DEFAULT -> {
-                this.privFoundTracks.postValue(foundTracks)
-            }
-
-            Status.LOADING -> {
-
+            trackInteractor.searchTrack(textSearch).collect() { result ->
+                privFoundTracks.postValue(result)
             }
         }
     }
 
-    fun removeCallbacks() {
-        handler.removeCallbacks(searchRunnable)
-    }
 
     fun loadHistory(): ArrayList<Track> =
         historyInteractor.loadHistory()
@@ -77,16 +56,26 @@ class SearchViewModel(
         loadHistory()
     }
 
+
     fun searchDebounce() {
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY_MILLIS)
+        job?.cancel()
+        job = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY_MILLIS)
+            if (textSearch.length >= 2) {
+                privFoundTracks.postValue(getStatus())
+                performSearch()
+            }
+        }
     }
 
     fun clickDebounce(): Boolean {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY_MILLIS)
+            viewModelScope.launch {
+                delay(CLICK_DEBOUNCE_DELAY_MILLIS)
+                isClickAllowed = true
+            }
         }
         return current
     }

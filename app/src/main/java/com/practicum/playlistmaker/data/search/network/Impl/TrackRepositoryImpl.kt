@@ -8,35 +8,47 @@ import com.practicum.playlistmaker.domain.search.TrackRepository
 import com.practicum.playlistmaker.domain.search.model.Status
 import com.practicum.playlistmaker.domain.search.model.Track
 import com.practicum.playlistmaker.domain.search.model.TrackSearchResult
-import java.lang.Exception
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 
 class TrackRepositoryImpl(private val networkClient: NetworkClient) : TrackRepository {
 
-    override fun searchTrack(expression: String): TrackSearchResult {
-        try {
+    override suspend fun searchTrack(expression: String): Flow<TrackSearchResult> = flow {
             val response = networkClient.doRequest(TrackRequest(expression))
-            return when(response.status) {
+
+            when (response.status) {
                 Status.RECEIVED -> {
                     val tracks: List<Track> = (response as TrackResponse).results.map {
                         DtoToTrack(it)
                     }
-                    TrackSearchResult(tracks).apply {
-                        if (tracks.isEmpty()) {
-                            status = Status.NOT_FOUND
-                        } else {
-                            status = Status.RECEIVED
+                    emit(
+                        TrackSearchResult(tracks).apply {
+                            if (tracks.isEmpty()) {
+                                status = Status.NOT_FOUND
+                            } else {
+                                status = Status.RECEIVED
+                            }
                         }
+                    )
+
+                }
+
+                else -> emit(
+                    TrackSearchResult(emptyList()).apply {
+                        status = Status.ERROR
                     }
-                } else -> TrackSearchResult(emptyList()).apply {
+                )
+            }
+        }.catch { e ->
+            e.printStackTrace()
+            emit(
+                TrackSearchResult(emptyList()).apply {
                     status = Status.ERROR
                 }
-            }
-        } catch (e: Exception) {
-            return TrackSearchResult(emptyList()).apply {
-                status = Status.ERROR
-            }
+            )
         }
-    }
+
 
     private fun DtoToTrack(trackDto: TrackDto): Track {
         return Track(

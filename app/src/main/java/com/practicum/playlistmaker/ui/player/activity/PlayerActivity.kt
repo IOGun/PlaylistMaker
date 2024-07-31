@@ -93,7 +93,10 @@ class PlayerActivity : AppCompatActivity() {
                 binding.timerView.text = dateFormat.format(playerStatus.position.toLong())
                 binding.playButton.setImageResource(R.drawable.pause_button)
             }
-            PlayerStatus.STATE_PREPARED, PlayerStatus.STATE_PAUSED, PlayerStatus.STATE_DEFAULT -> {
+            PlayerStatus.STATE_PREPARED, PlayerStatus.STATE_PAUSED -> {
+                binding.playButton.setImageResource(R.drawable.play_button)
+            }
+            PlayerStatus.STATE_DEFAULT -> {
                 binding.playButton.setImageResource(R.drawable.play_button)
             }
         }
