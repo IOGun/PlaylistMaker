@@ -14,35 +14,37 @@
         tools:src="@drawable/placeholder" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_gravity="center_vertical"
-        android:layout_marginHorizontal="@dimen/view_margin_horizontal"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_marginStart="8dp">
 
         <TextView
             android:id="@+id/trackName"
             style="@style/TrackName"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/view_track_name_height"
-            android:layout_gravity="top"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
             tools:text="Название трека" />
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/view_track_info_height"
-            android:layout_gravity="bottom"
-            android:layout_marginEnd="@dimen/view_track_info_margin_end"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center_vertical">
 
             <TextView
                 android:id="@+id/artistName"
                 style="@style/ArtistNameAndTime"
+                android:textSize="11sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
                 tools:text="Группа" />
@@ -55,8 +57,13 @@
             <TextView
                 android:id="@+id/trackTime"
                 style="@style/ArtistNameAndTime"
+                android:textSize="11sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0"
+                android:ellipsize="end"
+                android:maxLines="1"
                 tools:text="4:01" />
 
         </LinearLayout>
