@@ -123,7 +123,6 @@ class SearchFragment : Fragment() {
 
                 if (binding.findEditText.text.toString().isEmpty()) {
                     closePlaceholders()
-                    viewModel.removeCallbacks()
                 } else {
                     viewModel.changeTextSearch(binding.findEditText.text.toString())
                     viewModel.searchDebounce()
@@ -192,7 +191,6 @@ class SearchFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        viewModel.removeCallbacks()
     }
 
     override fun onResume() {

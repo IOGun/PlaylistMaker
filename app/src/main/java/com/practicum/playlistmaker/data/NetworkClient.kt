@@ -4,5 +4,5 @@ import com.practicum.playlistmaker.data.search.dto.Response
 import com.practicum.playlistmaker.data.search.dto.TrackRequest
 
 interface NetworkClient {
-    fun doRequest(dto: TrackRequest): Response
+    suspend fun doRequest(dto: TrackRequest): Response
 }
